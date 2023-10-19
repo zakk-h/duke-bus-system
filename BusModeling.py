@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-class DukeBusSystemWithOutput:
-    def __init__(self, id, time_between_ew, time_stop_along_route, let_off_people, pull_up_to_stop, wait_at_stop_for_people, num_buses, num_people_running, num_people_on_bus, print_output=True, num_stops=1, time_takes_to_wait_for_them=45/60):
+class DukeBusSystem:
+    def __init__(self, id, time_between_ew, time_stop_along_route, let_off_people, pull_up_to_stop, wait_at_stop_for_people, num_buses, num_people_running, num_people_on_bus, print_output=True, num_stops=2, time_takes_to_wait_for_them=45/60):
         self.id = id
         self.time_between_ew = time_between_ew
         self.time_stop_along_route = time_stop_along_route
@@ -18,6 +18,9 @@ class DukeBusSystemWithOutput:
         self.num_people_on_bus = num_people_on_bus
         self.time_takes_to_wait_for_stragglers = time_takes_to_wait_for_them
 
+    def get_true_ew_time(self):
+        return self.get_one_way_time()-self.wait_at_stop_for_people
+    
     def get_one_way_time(self):
         return self.time_between_ew + (self.num_stops * self.time_stop_along_route) + self.let_off_people + self.pull_up_to_stop + self.wait_at_stop_for_people
 
@@ -30,6 +33,11 @@ class DukeBusSystemWithOutput:
     def get_average_wait_time_uniform(self, bus_mirror_time):
         return (bus_mirror_time / (bus_mirror_time + self.wait_at_stop_for_people) * (bus_mirror_time / 2)) + (self.wait_at_stop_for_people / (bus_mirror_time + self.wait_at_stop_for_people) * (self.wait_at_stop_for_people / 2))
 
+    def get_max_wait_time(self):
+        one_way_time = self.get_one_way_time()
+        lap_time = self.get_lap_time(one_way_time)
+        return self.get_optimized_bus_mirror_time(lap_time)
+    
     def get_wait_time_benefit_of_letting_late_people_on_bus(self, bus_mirror_time):
         running_time_saved_per_person = bus_mirror_time - self.time_takes_to_wait_for_stragglers
         people_on_bus_time_wasted = self.time_takes_to_wait_for_stragglers
@@ -90,7 +98,7 @@ def simulate_for_params(wait_times, bus_numbers, time_between_ew=7, time_stop_al
     results = {}
     for wait_time in wait_times:
         for bus_num in bus_numbers:
-            duke_system = DukeBusSystemWithOutput(
+            duke_system = DukeBusSystem(
                 id=f"wait_time={wait_time}, bus_num={bus_num}", 
                 time_between_ew=time_between_ew, 
                 time_stop_along_route=time_stop_along_route, 
@@ -137,7 +145,61 @@ plt.show()
 #Optional Additional Object Creation
 separate_test_cases = True
 if separate_test_cases:
-    duke_system = DukeBusSystemWithOutput(1, time_between_ew=7, time_stop_along_route=20/60, let_off_people=30/60, pull_up_to_stop=15/60, wait_at_stop_for_people=5, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, num_stops=1, time_takes_to_wait_for_them=45/60)
+    duke_system = DukeBusSystem(1, time_between_ew=7, time_stop_along_route=20/60, let_off_people=30/60, pull_up_to_stop=15/60, wait_at_stop_for_people=5, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, num_stops=2, time_takes_to_wait_for_them=45/60)
     duke_system.simulate()
-    duke_system = DukeBusSystemWithOutput(2, time_between_ew=7, time_stop_along_route=20/60, let_off_people=30/60, pull_up_to_stop=15/60, wait_at_stop_for_people=40/60, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, num_stops=1, time_takes_to_wait_for_them=45/60)
+    duke_system = DukeBusSystem(2, time_between_ew=7, time_stop_along_route=20/60, let_off_people=30/60, pull_up_to_stop=15/60, wait_at_stop_for_people=40/60, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, num_stops=2, time_takes_to_wait_for_them=45/60)
     duke_system.simulate()
+
+class Student:
+    def __init__(self, time_allocated_for_bus=15):
+        """
+        Initialize a Student object.
+        
+        :param time_allocated_for_bus: Time the student has to reach class from the bus stop, in minutes.
+        """
+        self.time_allocated_for_bus = time_allocated_for_bus
+
+    def probability_of_being_late(self, bus_system, want_output=True):
+        """
+        Calculate the probability of the student being late based on the average and max wait time.
+        
+        :param bus_system: An instance of the DukeBusSystem class.
+        :return: Probability of being late.
+        """
+        average_wait = bus_system.get_average_wait_time_uniform(bus_system.get_optimized_bus_mirror_time(bus_system.get_lap_time(bus_system.get_one_way_time())))
+        max_wait = bus_system.get_max_wait_time()
+        true_ew = bus_system.get_true_ew_time()
+        
+        # If average wait time is less than the time left to reach class after waiting, then the student will surely be on time.
+        if max_wait < self.time_allocated_for_bus-true_ew:
+            self.probability = 0
+        # If the max wait time is less than the time left to reach class after waiting, then the student has a perfect chance in theory of being on time.
+        elif self.time_allocated_for_bus < true_ew:
+            self.probability = 1
+        else:
+            self.probability = 1-(self.time_allocated_for_bus-true_ew)/bus_system.get_max_wait_time()
+        if want_output:
+            self.do_output(self.probability)
+
+        return self.probability
+    
+    def do_output(self, probability):
+        print(f"A student that allocates {self.time_allocated_for_bus} minutes for the bus will be late approximately {probability*100}% of the time.")
+
+# Calculate the probabilities
+times = list(range(5, 21))
+probabilities = [Student(time).probability_of_being_late(duke_system, want_output=False) for time in times]
+
+# Plot the results
+plt.figure(figsize=(10, 6))
+plt.plot(times, probabilities, marker='o')
+plt.xlabel('Time Allocated for Bus (minutes)')
+plt.ylabel('Probability of Being Late')
+plt.title('Probability of Being Late vs Time Allocated for Bus')
+plt.grid(True)
+plt.show()
+
+# Create a Student instance
+student = Student(time_allocated_for_bus=12.2)
+student.probability_of_being_late(duke_system, want_output=True)
+
