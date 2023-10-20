@@ -225,7 +225,7 @@ class Student:
 
 def visualize_probabilities(duke_system1, duke_system2):
     # Calculate the probabilities
-    times = list(range(5, 21))
+    times = np.arange(5, 21.25, 0.25).tolist()
     probabilities1 = [Student(time).probability_of_being_late(duke_system1, want_output=False) for time in times]
     probabilities2 = [Student(time).probability_of_being_late(duke_system2, want_output=False) for time in times]
 
@@ -233,10 +233,10 @@ def visualize_probabilities(duke_system1, duke_system2):
     plt.figure(figsize=(10, 6))
     
     # Plotting for duke_system1
-    plt.plot(times, probabilities1, marker='o', label=f'Duke System {duke_system1.id}')
+    plt.plot(times, probabilities1, marker=None, linewidth=3, label=f'Duke System {duke_system1.id}')
     
     # Plotting for duke_system2
-    plt.plot(times, probabilities2, marker='o', label=f'Duke System {duke_system2.id}')
+    plt.plot(times, probabilities2, marker=None, linewidth=3, label=f'Duke System {duke_system2.id}')
     
     plt.xlabel('Time Allocated for Bus (minutes)')
     plt.ylabel('Probability of Being Late')
