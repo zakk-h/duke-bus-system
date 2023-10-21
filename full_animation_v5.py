@@ -2,10 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from BusModeling import DukeBusSystem
-#Change from v5. The user now spawns people by clicking along the vertical axis on each side.
+#Change from v4. The user now spawns people by clicking along the vertical axis on each side. A clock was also added.
 
 bus_stop_east = []
 bus_stop_west = []
+
+elapsed_frames = 0
 
 def animate_bus_system_debugged(bus_system, rate_of_people=15/60, board_rate=3, unload_rate=3):
     board_rate = board_rate*5
@@ -102,6 +104,29 @@ def animate_bus_system_debugged(bus_system, rate_of_people=15/60, board_rate=3, 
 
             ax.text(bus['position'], 5, 'Bus\n' + str(bus['people']), ha='center', va='center', bbox=dict(facecolor='blue', alpha=0.5))
             ax.text(bus['position'], 3, f"{bus['people']} passengers", ha='center', va='center', fontsize=8, color='black')
+
+        
+        global elapsed_frames
+        elapsed_frames += 1
+
+                # Assuming each frame in the animation represents 0.2 seconds in real life
+        animation_frame_time = 0.5*7/9  # in seconds
+
+        # Calculate the real-time elapsed for each frame based on the 7-minute travel time
+        real_time_per_frame = (7 * 60) / (bus_system.time_between_ew * 5 / animation_frame_time)  # in seconds
+
+
+        # Calculate the real-time elapsed based on the animation frames
+        #real_time_per_frame = (7 * 60) / (bus_system.time_between_ew * 5)  # in seconds
+        real_time_elapsed = elapsed_frames * real_time_per_frame  # in seconds
+
+        # Convert the real-time elapsed from seconds to minutes and seconds
+        minutes = int(real_time_elapsed // 60)
+        seconds = int(real_time_elapsed % 60)
+
+        # Display the timer on the plot
+        ax.text(50, 480, f"Elapsed: {minutes:02}:{seconds:02}", ha='center', va='center', fontsize=10, color='black', bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.5'))
+
 
         # Calculate the total height needed for all the waiting people
         height_east = len(bus_stop_east) * 0.6
