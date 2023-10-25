@@ -9,7 +9,7 @@ bus_stop_west = []
 
 elapsed_frames = 0
 
-def animate_bus_system_debugged(bus_system, rate_of_people=15/60, board_rate=3, unload_rate=3):
+def animate_bus_system_debugged(bus_system, time_between_ew=6, rate_of_people=15/60, board_rate=3, unload_rate=3):
     board_rate = board_rate*5
     unload_rate = unload_rate*5
 
@@ -22,7 +22,7 @@ def animate_bus_system_debugged(bus_system, rate_of_people=15/60, board_rate=3, 
     ax.set_title("Bus Movement Simulation")
 
     travel_time = bus_system.time_between_ew * 5  # Convert to animation frames
-    stop_time = int((5/7) * travel_time)
+    stop_time = int((5/time_between_ew) * travel_time)
     spacing = 90 / (bus_system.num_buses - 1)  # Adjust the spacing calculation
     buses = [{
         'position': 5 + i * spacing,  # Start the first bus at position 5 and space out subsequent buses
@@ -110,14 +110,14 @@ def animate_bus_system_debugged(bus_system, rate_of_people=15/60, board_rate=3, 
         elapsed_frames += 1
 
                 # Assuming each frame in the animation represents 0.2 seconds in real life
-        animation_frame_time = 0.5*7/9  # in seconds
+        animation_frame_time = 0.5*time_between_ew/9  # in seconds
 
-        # Calculate the real-time elapsed for each frame based on the 7-minute travel time
-        real_time_per_frame = (7 * 60) / (bus_system.time_between_ew * 5 / animation_frame_time)  # in seconds
+        # Calculate the real-time elapsed for each frame based on the x-minute travel time
+        real_time_per_frame = (time_between_ew * 60) / (bus_system.time_between_ew * 5 / animation_frame_time)  # in seconds
 
 
         # Calculate the real-time elapsed based on the animation frames
-        #real_time_per_frame = (7 * 60) / (bus_system.time_between_ew * 5)  # in seconds
+        #real_time_per_frame = (time_between_ew * 60) / (bus_system.time_between_ew * 5)  # in seconds
         real_time_elapsed = elapsed_frames * real_time_per_frame  # in seconds
 
         # Convert the real-time elapsed from seconds to minutes and seconds
@@ -164,5 +164,5 @@ def animate_bus_system_debugged(bus_system, rate_of_people=15/60, board_rate=3, 
     plt.show()
 
 # Running the animation
-duke_actual_system = DukeBusSystem("Actual", time_between_ew=7, time_stop_along_route=20/60, let_off_people=30/60, pull_up_to_stop=15/60, wait_at_stop_for_people=5, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, num_stops=2, time_takes_to_wait_for_them=45/60)
+duke_actual_system = DukeBusSystem("Actual", time_between_ew=6, time_stop_along_route=20/60, let_off_people=30/60, pull_up_to_stop=15/60, wait_at_stop_for_people=5, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, num_stops=2, time_takes_to_wait_for_them=45/60)
 animate_bus_system_debugged(duke_actual_system)

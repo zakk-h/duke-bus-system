@@ -7,12 +7,13 @@ from BusModeling import DukeBusSystem
 bus_stop_east = []
 bus_stop_west = []
 
-def animate_bus_system(bus_system, rate_of_people=15/60, board_rate=3, unload_rate=3):
+def animate_bus_system(bus_system, time_between_ew=6, rate_of_people=15/60, board_rate=3, unload_rate=3):
     board_rate = board_rate*5
     unload_rate = unload_rate*5
     global bus_stop_east, bus_stop_west
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(10, 6
+                                    ))
     ax.set_xlim(0, 100)
     ax.set_ylim(0, 10)
     ax.set_yticks([5])
@@ -21,7 +22,7 @@ def animate_bus_system(bus_system, rate_of_people=15/60, board_rate=3, unload_ra
     ax.set_title("Bus Movement Simulation")
 
     travel_time = bus_system.time_between_ew * 5  # Convert to animation frames
-    stop_time = int((5/7) * travel_time)
+    stop_time = int((5/time_between_ew) * travel_time)
     spacing = 200 / bus_system.num_buses
 
     buses = []
@@ -120,10 +121,10 @@ def animate_bus_system(bus_system, rate_of_people=15/60, board_rate=3, unload_ra
 
         # Draw people at bus stops
         for i in range(len(bus_stop_east)):
-            ax.text(95, 7 + 0.2*i, 'o', ha='center', va='center', color='red')
+            ax.text(95, time_between_ew + 0.2*i, 'o', ha='center', va='center', color='red')
 
         for i in range(len(bus_stop_west)):
-            ax.text(5, 7 + 0.2*i, 'o', ha='center', va='center', color='red')
+            ax.text(5, time_between_ew + 0.2*i, 'o', ha='center', va='center', color='red')
 
         # Add overlay text for people count at each bus stop
         ax.text(95, 8.5, f"{len(bus_stop_east)} waiting", ha='center', va='center', fontsize=8, color='black')
@@ -134,5 +135,5 @@ def animate_bus_system(bus_system, rate_of_people=15/60, board_rate=3, unload_ra
     ani = animation.FuncAnimation(fig, update, frames=int(bus_system.get_lap_time(bus_system.get_one_way_time()) * 5), init_func=init, blit=True, interval=200)
     plt.show()
 
-duke_actual_system = DukeBusSystem("Actual", time_between_ew=7, time_stop_along_route=20/60, let_off_people=30/60, pull_up_to_stop=15/60, wait_at_stop_for_people=5, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, num_stops=2, time_takes_to_wait_for_them=45/60)
+duke_actual_system = DukeBusSystem("Actual", time_between_ew=6, time_stop_along_route=20/60, let_off_people=30/60, pull_up_to_stop=15/60, wait_at_stop_for_people=5, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, num_stops=2, time_takes_to_wait_for_them=45/60)
 animate_bus_system(duke_actual_system)

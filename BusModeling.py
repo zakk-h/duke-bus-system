@@ -182,9 +182,9 @@ plt.show()
 '''
 
 #Additional Object Creation
-duke_actual_system = DukeBusSystem("Actual", time_between_ew=7, time_stop_along_route=20/60, let_off_people=30/60, pull_up_to_stop=15/60, wait_at_stop_for_people=5, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, num_stops=2, time_takes_to_wait_for_them=45/60)
+duke_actual_system = DukeBusSystem("Actual", time_between_ew=6, time_stop_along_route=20/60, let_off_people=30/60, pull_up_to_stop=15/60, wait_at_stop_for_people=5, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, num_stops=2, time_takes_to_wait_for_them=45/60)
 duke_actual_system.simulate()
-duke_optimized_system = DukeBusSystem("Optimized", time_between_ew=7, time_stop_along_route=20/60, let_off_people=30/60, pull_up_to_stop=15/60, wait_at_stop_for_people=45/60, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, num_stops=2, time_takes_to_wait_for_them=45/60)
+duke_optimized_system = DukeBusSystem("Optimized", time_between_ew=6, time_stop_along_route=20/60, let_off_people=30/60, pull_up_to_stop=15/60, wait_at_stop_for_people=45/60, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, num_stops=2, time_takes_to_wait_for_them=45/60)
 duke_optimized_system.simulate()
 
 class Student:
@@ -249,8 +249,8 @@ def visualize_probabilities(duke_system1, duke_system2):
 visualize_probabilities(duke_actual_system, duke_optimized_system)
 
 # Create Student instances
-student_actual = Student(time_allocated_for_bus=12)
+student_actual = Student(time_allocated_for_bus=11)
 student_actual.probability_of_being_late(duke_actual_system, want_output=True)
-student_hopeful = Student(time_allocated_for_bus=12)
+student_hopeful = Student(time_allocated_for_bus=11)
 student_hopeful.probability_of_being_late(duke_optimized_system, want_output=True)
 
