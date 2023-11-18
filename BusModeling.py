@@ -13,8 +13,6 @@ class DukeBusSystem:
         self.wait_at_stop_for_people = wait_at_stop_for_people
         self.num_buses = num_buses
         self.print_output = print_output
-        
-        # Parameters for simulation
         self.num_stops = num_stops
         self.num_people_running = num_people_running
         self.num_people_on_bus = num_people_on_bus
@@ -152,35 +150,6 @@ sns.heatmap(heatmap_data, annot=True, fmt=".2f", cmap='viridis', linewidths=.5)
 plt.title('Effects of Wait Time at Stop and Number of Buses on Average Wait Time (Uniform Distribution)')
 plt.show()
 
-#Old
-'''
-# Running the simulations
-wait_times = np.linspace(0.5, 10, 20)  # 20 values between 0.5 and 10
-bus_numbers = list(range(1, 11))  # 10 values between 1 and 10
-results_with_output = simulate_for_params(wait_times, bus_numbers)
-
-# Extracting results for graphing
-X, Y, Z = [], [], []
-for (wait_time, bus_num), avg_wait in results_with_output.items():
-    X.append(wait_time)
-    Y.append(bus_num)
-    Z.append(avg_wait)
-
-X = np.array(X)
-Y = np.array(Y)
-Z = np.array(Z)
-
-# Plotting the results
-plt.figure(figsize=(12, 8))
-plt.scatter(X, Y, c=Z, cmap='viridis', s=100)
-plt.colorbar(label="New Average Wait Time (minutes)")
-plt.xlabel("Wait at Stop for People (minutes)")
-plt.ylabel("Number of Buses")
-plt.title("Effects of Wait Time at Stop and Number of Buses on New Average Wait Time")
-plt.grid(True)
-plt.show()
-'''
-
 #Additional Object Creation
 duke_actual_system = DukeBusSystem("Actual", time_between_ew=6, time_stop_along_route=20/60, let_off_people=30/60, pull_up_to_stop=15/60, wait_at_stop_for_people=5, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, num_stops=2, time_takes_to_wait_for_them=45/60)
 duke_actual_system.simulate()
@@ -189,20 +158,9 @@ duke_optimized_system.simulate()
 
 class Student:
     def __init__(self, time_allocated_for_bus=15):
-        """
-        Initialize a Student object.
-        
-        :param time_allocated_for_bus: Time the student has to reach class from the bus stop, in minutes.
-        """
         self.time_allocated_for_bus = time_allocated_for_bus
 
     def probability_of_being_late(self, bus_system, want_output=True):
-        """
-        Calculate the probability of the student being late based on the average and max wait time.
-        
-        :param bus_system: An instance of the DukeBusSystem class.
-        :return: Probability of being late.
-        """
         average_wait = bus_system.get_average_wait_time_uniform(bus_system.get_optimized_bus_mirror_time(bus_system.get_lap_time(bus_system.get_one_way_time())))
         max_wait = bus_system.get_max_wait_time()
         true_ew = bus_system.get_true_ew_time()

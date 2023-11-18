@@ -2,7 +2,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from BusModeling import DukeBusSystem
-#Change from v4. The user now spawns people by clicking along the vertical axis on each side. A clock was also added.
+
+from matplotlib.widgets import Button
+
+# Global variable to store the mode
+is_auto_spawn = True
+
+def toggle_spawning(event):
+    global is_auto_spawn, btn  
+    is_auto_spawn = not is_auto_spawn
+    btn.label.set_text('Auto Spawn: ON' if is_auto_spawn else 'Auto Spawn: OFF')
+
+
 
 bus_stop_east = []
 bus_stop_west = []
@@ -10,10 +21,20 @@ bus_stop_west = []
 elapsed_frames = 0
 
 def animate_bus_system_debugged(bus_system, time_between_ew=6, rate_of_people=15/60, board_rate=3, unload_rate=3):
+    global btn
     board_rate = board_rate*5
     unload_rate = unload_rate*5
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig = plt.figure(figsize=(10, 7))  # Adjust the figure size if needed
+    ax = plt.subplot2grid((8, 1), (0, 0), rowspan=7)  # Subplot for the animation
+
+    # Define the position and size of the button [left, bottom, width, height]
+    # These values are in figure coordinate (0 to 1)
+    button_axes = fig.add_axes([0.75, 0.02, 0.12, 0.04])    
+    btn = Button(button_axes, 'Auto Spawn: ON')
+    btn.on_clicked(toggle_spawning)
+
+
     ax.set_xlim(0, 100)
     ax.set_ylim(1, 500)  # Set the y limit to a fixed range
     ax.set_yticks([5])
@@ -38,7 +59,8 @@ def animate_bus_system_debugged(bus_system, time_between_ew=6, rate_of_people=15
         return []
 
     def update(num):
-        global bus_stop_east, bus_stop_west
+        global bus_stop_east, bus_stop_west, is_auto_spawn
+
         
         ax.clear()
         ax.set_xlim(0, 100)
@@ -48,6 +70,14 @@ def animate_bus_system_debugged(bus_system, time_between_ew=6, rate_of_people=15
         ax.set_yticklabels(['Route'])
         ax.set_xlabel('Position along Route')
         ax.set_title("Bus Movement Simulation")
+
+        if is_auto_spawn:
+            # Add new people automatically if in auto spawn mode
+            new_people_east = int(rate_of_people * 5)
+            new_people_west = int(rate_of_people * 5)
+            bus_stop_east += [1] * new_people_east
+            bus_stop_west += [1] * new_people_west
+
 
         for bus in buses:
             if bus['state'] == 'moving':
