@@ -29,9 +29,38 @@ class DukeBusSystem:
 
     def get_optimized_bus_mirror_time(self, lap_time):
         return lap_time / self.num_buses
+    
+    def get_unoptimized_average_wait_time(self,lap_time):
+        if self.get_nonoptimized_bus_mirror_time() == 0: return 0
+        mirror_array = self.get_nonoptimized_bus_mirror_time()
+        wt_1to2 = mirror_array[0]
+        wt_2to3 = mirror_array[1]
+        wt_3to4 = mirror_array[2]
+        wt_4to1 = lap_time - wt_1to2-wt_2to3-wt_3to4
+        percent_people_between_1to2= wt_1to2/lap_time
+        percent_people_between_2to3= wt_2to3/lap_time
+        percent_people_between_3to4= wt_3to4/lap_time
+        percent_people_between_4to1= wt_4to1/lap_time
+
+        weighted_average_wait_times = wt_1to2*percent_people_between_1to2+wt_2to3*percent_people_between_2to3+wt_3to4*percent_people_between_3to4+wt_4to1*percent_people_between_4to1
+        return weighted_average_wait_times
+    def get_nonoptimized_bus_mirror_time(self):
+            #Depiction of horribly optimized bus system
+            if self.num_buses !=4: return 0 #"Error, Duke Bus system primarily runs with 4 (or 5) buses. This method is intended to represent what the Duke bus system can sometimes look like, and thus incompatible with all numbers of buses."
+            offsets = [0.25, 0.25, 2+self.wait_at_stop_for_people]
+            return offsets
+    def get_unoptimized_max_wait_time(self, lap_time):
+        if self.get_nonoptimized_bus_mirror_time() == 0: return 0
+        mirror_array = self.get_nonoptimized_bus_mirror_time()
+        wt_1to2 = mirror_array[0]
+        wt_2to3 = mirror_array[1]
+        wt_3to4 = mirror_array[2]
+        wt_4to1 = lap_time - wt_1to2-wt_2to3-wt_3to4
+        return wt_4to1 
 
     def get_average_wait_time_uniform(self, bus_mirror_time):
-        return (bus_mirror_time / (bus_mirror_time + self.wait_at_stop_for_people) * (bus_mirror_time / 2)) + (self.wait_at_stop_for_people / (bus_mirror_time + self.wait_at_stop_for_people) * (self.wait_at_stop_for_people / 2))
+        return bus_mirror_time/2
+        #return (bus_mirror_time / (bus_mirror_time + self.wait_at_stop_for_people) * (bus_mirror_time / 2)) + (self.wait_at_stop_for_people / (bus_mirror_time + self.wait_at_stop_for_people) * (self.wait_at_stop_for_people / 2))
 
     def get_max_wait_time(self):
         one_way_time = self.get_one_way_time()
@@ -87,7 +116,14 @@ class DukeBusSystem:
             print(f"Optimized Bus Offset: {bus_mirror_time:.2f} minutes")
             print(f"Max Wait Time: {bus_mirror_time:.2f} minutes")
             print(f"Average Wait Time Per Person (Uniform Distribution): {average_wait_time:.2f} minutes")
-            print(f"Scenario 1: {self.num_people_running} people are running up to a bus with {self.num_people_on_bus} people. What would be the effect of waiting {self.time_takes_to_wait_for_stragglers*60} seconds to let them on?")
+            if self.id == "Actual" and self.num_buses == 4:
+                print(f"Scenario: The Duke Bus System often has buses driving right behind other buses. If this was the case with four buses, three running close to each other and one properly spread out, what would the max and average wait time be?")
+                max_wait_unop = self.get_unoptimized_max_wait_time(self.get_lap_time(self.get_one_way_time()))
+                average_wait_unop = self.get_unoptimized_average_wait_time(self.get_lap_time(self.get_one_way_time()))
+                print(f"Max Wait Time: {max_wait_unop:.2f} minutes")
+                print(f"Average Wait Time Per Person: {average_wait_unop:.2f} minutes")
+            
+            print(f"Scenario: {self.num_people_running} people are running up to a bus with {self.num_people_on_bus} people. What would be the effect of waiting {self.time_takes_to_wait_for_stragglers*60} seconds to let them on?")
             print(f"Wait Time Saved Per Person: {wait_time_saved_per_person:.2f} minutes")
             print(f"New Average Wait Time: {new_average_wait_time:.2f} minutes")
             print("-" * 40)
