@@ -4,7 +4,7 @@ import seaborn as sns
 import pandas as pd
 
 class DukeBusSystem:
-    def __init__(self, id, time_between_ew, time_stop_along_route, let_off_people, pull_up_to_stop, wait_at_stop_for_people, num_buses, num_people_running, num_people_on_bus, print_output=True, num_stops=2, time_takes_to_wait_for_them=45/60):
+    def __init__(self, id, time_between_ew, time_stop_along_route, let_off_people, pull_up_to_stop, wait_at_stop_for_people, num_buses, num_people_running, num_people_on_bus, print_output=True, capacity = 100, num_stops=2, time_takes_to_wait_for_them=45/60):
         self.id = id
         self.time_between_ew = time_between_ew
         self.time_stop_along_route = time_stop_along_route
@@ -17,6 +17,7 @@ class DukeBusSystem:
         self.num_people_running = num_people_running
         self.num_people_on_bus = num_people_on_bus
         self.time_takes_to_wait_for_stragglers = time_takes_to_wait_for_them
+        self.capacity = capacity
 
     def get_true_ew_time(self):
         return self.get_one_way_time()-self.wait_at_stop_for_people
@@ -24,6 +25,8 @@ class DukeBusSystem:
     def get_one_way_time(self):
         return self.time_between_ew + (self.num_stops * self.time_stop_along_route) + self.let_off_people + self.pull_up_to_stop + self.wait_at_stop_for_people
 
+    def get_max_hourly_throughput(self):
+        return ((self.capacity)*self.num_buses)*60/self.get_one_way_time()
     def get_lap_time(self, one_way_time):
         return one_way_time * 2
 
@@ -83,6 +86,7 @@ class DukeBusSystem:
         average_wait_time = self.get_average_wait_time_uniform(bus_mirror_time)
         wait_time_saved_per_person = self.get_wait_time_benefit_of_letting_late_people_on_bus(bus_mirror_time)
         new_average_wait_time = self.get_new_average_wait_time(wait_time_saved_per_person, average_wait_time)
+        throughput = self.get_max_hourly_throughput()
         
         # Storing the results
         self.results = {
@@ -116,6 +120,7 @@ class DukeBusSystem:
             print(f"Optimized Bus Offset: {bus_mirror_time:.2f} minutes")
             print(f"Max Wait Time: {bus_mirror_time:.2f} minutes")
             print(f"Average Wait Time Per Person (Uniform Distribution): {average_wait_time:.2f} minutes")
+            print(f"Maximum Throughput Per Hour: {throughput:.0f} people")
             if self.id == "Actual" and self.num_buses == 4:
                 print(f"Scenario: The Duke Bus System often has buses driving right behind other buses. If this was the case with four buses, three running close to each other and one properly spread out, what would the max and average wait time be?")
                 max_wait_unop = self.get_unoptimized_max_wait_time(self.get_lap_time(self.get_one_way_time()))
@@ -154,8 +159,8 @@ def simulate_for_params(wait_times, bus_numbers, time_between_ew=7, time_stop_al
 
 
 # Running the simulations
-wait_times = np.linspace(0.5, 10, 20)  # 20 values between 0.5 and 10
-bus_numbers = list(range(1, 11))  # 10 values between 1 and 10
+wait_times = np.linspace(0.5, 8, 16)  # 16 values between 0.5 and 16
+bus_numbers = np.linspace(1, 10, 10, dtype=int)  # (10) Integer values between 1 and 10
 results_with_output = simulate_for_params(wait_times, bus_numbers)
 
 # Extracting results for graphing
@@ -165,10 +170,6 @@ for (wait_time, bus_num), avg_wait in results_with_output.items():
     Y.append(bus_num)
     Z.append(avg_wait)
 
-
-X = np.array(X)
-Y = np.array(Y)
-Z = np.array(Z)
 
 # Convert the results to a DataFrame for heatmap
 df = pd.DataFrame({
@@ -182,14 +183,15 @@ heatmap_data = df.pivot_table(index='Number of Buses', columns='Wait Time at Sto
 
 # Plot the heatmap
 plt.figure(figsize=(12, 8))
-sns.heatmap(heatmap_data, annot=True, fmt=".2f", cmap='viridis', linewidths=.5)
+sns.heatmap(heatmap_data, annot=True, fmt=".2f", cmap='cividis', linewidths=.5)
 plt.title('Effects of Wait Time at Stop and Number of Buses on Average Wait Time (Uniform Distribution)')
 plt.show()
 
-#Additional Object Creation
-duke_actual_system = DukeBusSystem("Actual", time_between_ew=6, time_stop_along_route=20/60, let_off_people=30/60, pull_up_to_stop=15/60, wait_at_stop_for_people=5, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, num_stops=2, time_takes_to_wait_for_them=45/60)
+#Object creation for simulation
+duke_actual_system = DukeBusSystem("Actual", time_between_ew=6, time_stop_along_route=20/60, let_off_people=30/60, pull_up_to_stop=15/60, wait_at_stop_for_people=5, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, capacity = 100, num_stops=2, time_takes_to_wait_for_them=45/60)
 duke_actual_system.simulate()
-duke_optimized_system = DukeBusSystem("Optimized", time_between_ew=6, time_stop_along_route=20/60, let_off_people=30/60, pull_up_to_stop=15/60, wait_at_stop_for_people=45/60, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, num_stops=2, time_takes_to_wait_for_them=45/60)
+print(duke_actual_system.get_max_hourly_throughput())
+duke_optimized_system = DukeBusSystem("Optimized", time_between_ew=6, time_stop_along_route=20/60, let_off_people=30/60, pull_up_to_stop=15/60, wait_at_stop_for_people=45/60, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, capacity = 100, num_stops=2, time_takes_to_wait_for_them=45/60)
 duke_optimized_system.simulate()
 
 class Student:
@@ -219,18 +221,18 @@ class Student:
 
 def visualize_probabilities(duke_system1, duke_system2):
     # Calculate the probabilities
-    times = np.arange(5, 21.25, 0.25).tolist()
+    times = np.arange(5, 21.25, 0.25).tolist() #Get probability every 0.25 minutes starting at 5 minutes and ending at 21.25
     probabilities1 = [Student(time).probability_of_being_late(duke_system1, want_output=False) for time in times]
     probabilities2 = [Student(time).probability_of_being_late(duke_system2, want_output=False) for time in times]
 
     # Plot the results
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(10, 6)) #Aspect ratio
     
     # Plotting for duke_system1
-    plt.plot(times, probabilities1, marker=None, linewidth=3, label=f'Duke System {duke_system1.id}')
+    plt.plot(times, probabilities1, marker=None, linewidth=3, color='orange', label=f'Duke System {duke_system1.id}')
     
     # Plotting for duke_system2
-    plt.plot(times, probabilities2, marker=None, linewidth=3, label=f'Duke System {duke_system2.id}')
+    plt.plot(times, probabilities2, marker=None, linewidth=3, color='blue', label=f'Duke System {duke_system2.id}')
     
     plt.xlabel('Time Allocated for Bus (minutes)')
     plt.ylabel('Probability of Being Late')

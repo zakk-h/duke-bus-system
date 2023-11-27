@@ -20,7 +20,7 @@ bus_stop_west = []
 
 elapsed_frames = 0
 
-def animate_bus_system_debugged(bus_system, time_between_ew=6, rate_of_people=15/60, board_rate=3, unload_rate=3):
+def animate_bus_system(bus_system, rate_of_people=15/60, board_rate=3, unload_rate=3):
     global btn
     board_rate = board_rate*5
     unload_rate = unload_rate*5
@@ -43,7 +43,7 @@ def animate_bus_system_debugged(bus_system, time_between_ew=6, rate_of_people=15
     ax.set_title("Bus Movement Simulation")
 
     travel_time = bus_system.time_between_ew * 5  # Convert to animation frames
-    stop_time = int((5/time_between_ew) * travel_time)
+    stop_time = int((5/bus_system.time_between_ew) * travel_time)
     spacing = 90 / (bus_system.num_buses - 1)  # Adjust the spacing calculation
     buses = [{
         'position': 5 + i * spacing,  # Start the first bus at position 5 and space out subsequent buses
@@ -106,7 +106,7 @@ def animate_bus_system_debugged(bus_system, time_between_ew=6, rate_of_people=15
                     if bus['loading']:
                         if bus['position'] >= 95:
                             for _ in range(board_rate):
-                                if bus_stop_east and bus['people'] < 100:
+                                if bus_stop_east and bus['people'] < bus_system.capacity:
                                     bus['people'] += 1
                                     bus_stop_east.pop(0)
                                 elif bus['people'] == 100 or not bus_stop_east:  # Bus is full or no people left
@@ -116,10 +116,10 @@ def animate_bus_system_debugged(bus_system, time_between_ew=6, rate_of_people=15
                                     break  # Exit the boarding loop
                         elif bus['position'] <= 5:
                             for _ in range(board_rate):
-                                if bus_stop_west and bus['people'] < 100:
+                                if bus_stop_west and bus['people'] < bus_system.capacity:
                                     bus['people'] += 1
                                     bus_stop_west.pop(0)
-                                elif bus['people'] == 100 or not bus_stop_west:  # Bus is full or no people left
+                                elif bus['people'] == bus_system.capacity or not bus_stop_west:  # Bus is full or no people left
                                     bus['direction'] *= -1
                                     bus['state'] = 'moving'
                                     bus['loading'] = False
@@ -140,14 +140,14 @@ def animate_bus_system_debugged(bus_system, time_between_ew=6, rate_of_people=15
         elapsed_frames += 1
 
                 # Assuming each frame in the animation represents 0.2 seconds in real life
-        animation_frame_time = 0.5*time_between_ew/9  # in seconds
+        animation_frame_time = 0.5*bus_system.time_between_ew/9  # in seconds
 
         # Calculate the real-time elapsed for each frame based on the x-minute travel time
-        real_time_per_frame = (time_between_ew * 60) / (bus_system.time_between_ew * 5 / animation_frame_time)  # in seconds
+        real_time_per_frame = (bus_system.time_between_ew * 60) / (bus_system.time_between_ew * 5 / animation_frame_time)  # in seconds
 
 
         # Calculate the real-time elapsed based on the animation frames
-        #real_time_per_frame = (time_between_ew * 60) / (bus_system.time_between_ew * 5)  # in seconds
+        #real_time_per_frame = (bus_system.time_between_ew * 60) / (bus_system.time_between_ew * 5)  # in seconds
         real_time_elapsed = elapsed_frames * real_time_per_frame  # in seconds
 
         # Convert the real-time elapsed from seconds to minutes and seconds
@@ -194,5 +194,5 @@ def animate_bus_system_debugged(bus_system, time_between_ew=6, rate_of_people=15
     plt.show()
 
 # Running the animation
-duke_actual_system = DukeBusSystem("Actual", time_between_ew=6, time_stop_along_route=20/60, let_off_people=30/60, pull_up_to_stop=15/60, wait_at_stop_for_people=5, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, num_stops=2, time_takes_to_wait_for_them=45/60)
-animate_bus_system_debugged(duke_actual_system)
+duke_optimized_system = DukeBusSystem("Optimized", time_between_ew=6, time_stop_along_route=20/60, let_off_people=30/60, pull_up_to_stop=15/60, wait_at_stop_for_people=5, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, capacity = 100, num_stops=2, time_takes_to_wait_for_them=45/60)
+animate_bus_system(duke_optimized_system)
