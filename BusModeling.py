@@ -19,6 +19,9 @@ class DukeBusSystem:
         self.time_takes_to_wait_for_stragglers = time_takes_to_wait_for_them
         self.capacity = capacity
 
+        #To calculate
+        self.one_way_time = None
+
     def get_true_ew_time(self):
         return self.get_one_way_time()-self.wait_at_stop_for_people
     
@@ -34,7 +37,7 @@ class DukeBusSystem:
         return lap_time / self.num_buses
     
     def get_unoptimized_average_wait_time(self,lap_time):
-        if self.get_nonoptimized_bus_mirror_time() == 0: return 0
+        if self.get_nonoptimized_bus_mirror_time() == "Error": return "Error"
         mirror_array = self.get_nonoptimized_bus_mirror_time()
         wt_1to2 = mirror_array[0]
         wt_2to3 = mirror_array[1]
@@ -47,9 +50,10 @@ class DukeBusSystem:
 
         weighted_average_wait_times = wt_1to2*percent_people_between_1to2+wt_2to3*percent_people_between_2to3+wt_3to4*percent_people_between_3to4+wt_4to1*percent_people_between_4to1
         return weighted_average_wait_times
+    
     def get_nonoptimized_bus_mirror_time(self):
             #Depiction of horribly optimized bus system
-            if self.num_buses !=4: return 0 #"Error, Duke Bus system primarily runs with 4 (or 5) buses. This method is intended to represent what the Duke bus system can sometimes look like, and thus incompatible with all numbers of buses."
+            if self.num_buses !=4: return "Error" #"Error, Duke Bus system primarily runs with 4 (or 5) buses. This method is intended to represent what the Duke bus system can sometimes look like, and thus incompatible with all numbers of buses."
             offsets = [0.25, 0.25, 2+self.wait_at_stop_for_people]
             return offsets
     def get_unoptimized_max_wait_time(self, lap_time):
