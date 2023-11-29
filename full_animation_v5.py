@@ -109,7 +109,7 @@ def animate_bus_system(bus_system, rate_of_people=15/60, board_rate=3, unload_ra
                                 if bus_stop_east and bus['people'] < bus_system.capacity:
                                     bus['people'] += 1
                                     bus_stop_east.pop(0)
-                                elif bus['people'] == 100 or not bus_stop_east:  # Bus is full or no people left
+                                elif bus['people'] == bus_system.capacity or not bus_stop_east:  # Bus is full or no people left
                                     bus['direction'] *= -1
                                     bus['state'] = 'moving'
                                     bus['loading'] = False
@@ -194,5 +194,5 @@ def animate_bus_system(bus_system, rate_of_people=15/60, board_rate=3, unload_ra
     plt.show()
 
 # Running the animation
-duke_optimized_system = DukeBusSystem("Optimized", time_between_ew=6, time_stop_along_route=20/60, let_off_people=30/60, pull_up_to_stop=15/60, wait_at_stop_for_people=5, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, capacity = 100, num_stops=2, time_takes_to_wait_for_them=45/60)
+duke_optimized_system = DukeBusSystem("Optimized", time_between_ew=5.5, time_stop_along_route=20/60, let_off_people=20/60, pull_up_to_stop=20/60, wait_at_stop_for_people=45/60, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, capacity = round(1.2*(112+60*3)/4,0), num_stops=2, time_takes_to_wait_for_them=45/60)
 animate_bus_system(duke_optimized_system)

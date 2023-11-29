@@ -19,8 +19,17 @@ class DukeBusSystem:
         self.time_takes_to_wait_for_stragglers = time_takes_to_wait_for_them
         self.capacity = capacity
 
-        #To calculate
         self.one_way_time = None
+        self.lap_time = None
+        self.bus_mirror_time = None
+        self.average_wait_time = None
+        self.wait_time_saved_per_person = None
+        self.new_average_wait_time = None
+        self.throughput = None
+
+
+    def get_average_time_person_on_bus(self):
+        return self.average_wait_time+self.get_true_ew_time()
 
     def get_true_ew_time(self):
         return self.get_one_way_time()-self.wait_at_stop_for_people
@@ -30,6 +39,7 @@ class DukeBusSystem:
 
     def get_max_hourly_throughput(self):
         return ((self.capacity)*self.num_buses)*60/self.get_one_way_time()
+
     def get_lap_time(self, one_way_time):
         return one_way_time * 2
 
@@ -85,12 +95,19 @@ class DukeBusSystem:
 
     def simulate(self):
         one_way_time = self.get_one_way_time()
+        self.one_way_time = one_way_time
         lap_time = self.get_lap_time(one_way_time)
+        self.lap_time = lap_time
         bus_mirror_time = self.get_optimized_bus_mirror_time(lap_time)
+        self.bus_mirror_time = bus_mirror_time
         average_wait_time = self.get_average_wait_time_uniform(bus_mirror_time)
+        self.average_wait_time = average_wait_time
         wait_time_saved_per_person = self.get_wait_time_benefit_of_letting_late_people_on_bus(bus_mirror_time)
+        self.wait_time_saved_per_person = wait_time_saved_per_person
         new_average_wait_time = self.get_new_average_wait_time(wait_time_saved_per_person, average_wait_time)
+        self.new_average_wait_time = new_average_wait_time
         throughput = self.get_max_hourly_throughput()
+        self.throughput = throughput
         
         # Storing the results
         self.results = {
@@ -192,10 +209,10 @@ plt.title('Effects of Wait Time at Stop and Number of Buses on Average Wait Time
 plt.show()
 
 #Object creation for simulation
-duke_actual_system = DukeBusSystem("Actual", time_between_ew=6, time_stop_along_route=20/60, let_off_people=30/60, pull_up_to_stop=15/60, wait_at_stop_for_people=5, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, capacity = 100, num_stops=2, time_takes_to_wait_for_them=45/60)
+duke_actual_system = DukeBusSystem("Actual", time_between_ew=5.5, time_stop_along_route=20/60, let_off_people=20/60, pull_up_to_stop=20/60, wait_at_stop_for_people=4.2, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, capacity = round(1.2*(112+60*3)/4,0), num_stops=2, time_takes_to_wait_for_them=45/60)
 duke_actual_system.simulate()
 print(duke_actual_system.get_max_hourly_throughput())
-duke_optimized_system = DukeBusSystem("Optimized", time_between_ew=6, time_stop_along_route=20/60, let_off_people=30/60, pull_up_to_stop=15/60, wait_at_stop_for_people=45/60, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, capacity = 100, num_stops=2, time_takes_to_wait_for_them=45/60)
+duke_optimized_system = DukeBusSystem("Optimized", time_between_ew=5.5, time_stop_along_route=20/60, let_off_people=20/60, pull_up_to_stop=20/60, wait_at_stop_for_people=45/60, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, capacity = round(1.2*(112+60*3)/4,0), num_stops=2, time_takes_to_wait_for_them=45/60)
 duke_optimized_system.simulate()
 
 class Student:

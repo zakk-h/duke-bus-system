@@ -62,7 +62,6 @@ url = "https://transloc-api-1-2.p.rapidapi.com/vehicles.json"
 
 # Province Route ID: 4013312 ; RIT Agency ID: 643
 #querystring = {"routes":"4016624","callback":"call","agencies":"643"} # Evening Campus Shuttle
-agency_id = 176
 querystring = {"callback":"call", "agencies":agency_id}
 
 # querystring = {"routes":"4013312","callback":"call","agencies":"643"}   # Province
@@ -261,10 +260,8 @@ def passenger_load_list(route_id_list,agency_id,route_name_list):
 #-------------------------
 
 ####################################################################Duke Specific Code
-agency_id = '176' 
 print(get_routes(agency_id))
-#We see from the above output that route_id = '4008330' for C1
-route_id = '4008330'
+#We see from the above output that route_id = '4008330' for C1 (already set)
 print(get_vehicles(route_id, agency_id))
 print(get_available_vehicles(route_id, agency_id, "C1"))
 
