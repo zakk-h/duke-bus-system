@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from BusModeling import DukeBusSystem
+# Data from 11/28: https://docs.google.com/spreadsheets/d/1alFjRYx7_sqpGHysy1RGm4835o5iT6imzKh0xQltEo0/edit?usp=sharing
 
 # Load the CSV data into a DataFrame using pandas
 df = pd.read_csv('vehicle_data.csv', names=['datetime', 'vehicle_id', 'passenger_load'])
@@ -26,12 +27,15 @@ time_on_bus_csv_periods = time_on_bus_minutes # They are 1-to-1
 
 real_passenger_percent_total = total_passenger_percent/time_on_bus_csv_periods
 
-bus_capacity_for_100 = duke_actual_system.capacity
-print(f"Bus Capacity (to have Transloc display 100%, average across bus sizes): {bus_capacity_for_100}")
+factor = 1.2 # Capacity does not line up precisely with 100%, and we adjust for that here.
+bus_capacity_for_100 = duke_actual_system.capacity/factor 
+print(f"Bus Capacity (to have Transloc display 100%, average across bus sizes): {round(bus_capacity_for_100)}")
 
 num_people_uses_over_csv = real_passenger_percent_total/100*bus_capacity_for_100
 
-print(f"Number of uses the C1 got over the time period: {num_people_uses_over_csv}")
+print(f"Number of C1 uses over the time period: {round(num_people_uses_over_csv)}")
 print(f"The total time on the bus of all passengers over this time period is approximately {round(num_people_uses_over_csv*time_on_bus_csv_periods/60)} hours")
 
-
+duke_class_of_2027 = 1743
+print(f"Ratio of number of uses to first-year students: {round(num_people_uses_over_csv/duke_class_of_2027,2)}")
+print(f"Ratio of number of uses/2 (round trip) to first-year students: {round((num_people_uses_over_csv/2)/duke_class_of_2027,2)}")

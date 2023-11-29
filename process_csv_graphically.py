@@ -24,7 +24,7 @@ plt.xlabel('Time')
 plt.ylabel('Passenger Load (%)')
 plt.title('Passenger Load Over Time for Each Bus')
 plt.grid(True)
-#plt.xticks(rotation=45) # If including the date, it would be best to rotate the labels on the x axis.
+plt.xticks(rotation=0)  # If including the date, it would be best to rotate the labels on the x axis.
 plt.tight_layout()
 plt.show()
 
@@ -33,21 +33,12 @@ plt.show()
 # Additionally, buses already register above 100% for standing passengers, etc.
 combined_load = df.groupby('datetime')['passenger_load'].sum()
 
-plt.figure(figsize=(15, 8))
-combined_load.plot()
-plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
-plt.xlabel('Time')
-plt.ylabel('Combined Passenger Load (%)')
-plt.title('Combined Passenger Load Over Time Across All Buses')
-plt.grid(True)
-#plt.xticks(rotation=45)
-plt.tight_layout()
-plt.show()
-
-plt.figure(figsize=(15, 8))
-
 # Calculate the 1-hour moving average
 moving_avg = combined_load.rolling(window='1H').mean()
+
+plt.figure(figsize=(15, 8))
+
+combined_load.plot()
 
 # Plot the moving average starting at minute 61, using the first hours' data for the first point
 start_point = combined_load.index[0] + pd.Timedelta(hours=1)
@@ -55,10 +46,10 @@ moving_avg[start_point:].plot(label='1-Hour Moving Average')
 
 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
 plt.xlabel('Time')
-plt.ylabel('Passenger Load (%)')
-plt.title('Combined Passenger Load (1 HR Moving Average) over Time')
+plt.ylabel('Combined Passenger Load (%)')
+plt.title('Combined Passenger Load Over Time Across All Buses (with 1HR Moving Average)')
 plt.grid(True)
-plt.legend()
-#plt.xticks(rotation=45)
+plt.xticks(rotation=0)
 plt.tight_layout()
+
 plt.show()

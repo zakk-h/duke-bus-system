@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from BusModeling import DukeBusSystem
-
 from matplotlib.widgets import Button
 
 # Global variable to store the mode
@@ -12,8 +11,6 @@ def toggle_spawning(event):
     global is_auto_spawn, btn  
     is_auto_spawn = not is_auto_spawn
     btn.label.set_text('Auto Spawn: ON' if is_auto_spawn else 'Auto Spawn: OFF')
-
-
 
 bus_stop_east = []
 bus_stop_west = []
@@ -34,7 +31,6 @@ def animate_bus_system(bus_system, rate_of_people=15/60, board_rate=3, unload_ra
     btn = Button(button_axes, 'Auto Spawn: ON')
     btn.on_clicked(toggle_spawning)
 
-
     ax.set_xlim(0, 100)
     ax.set_ylim(1, 500)  # Set the y limit to a fixed range
     ax.set_yticks([5])
@@ -54,14 +50,12 @@ def animate_bus_system(bus_system, rate_of_people=15/60, board_rate=3, unload_ra
         'loading': False
     } for i in range(bus_system.num_buses)]
 
-
     def init():
         return []
 
     def update(num):
         global bus_stop_east, bus_stop_west, is_auto_spawn
 
-        
         ax.clear()
         ax.set_xlim(0, 100)
         ax.set_ylim(1, 500)
@@ -77,7 +71,6 @@ def animate_bus_system(bus_system, rate_of_people=15/60, board_rate=3, unload_ra
             new_people_west = int(rate_of_people * 5)
             bus_stop_east += [1] * new_people_east
             bus_stop_west += [1] * new_people_west
-
 
         for bus in buses:
             if bus['state'] == 'moving':
@@ -131,20 +124,17 @@ def animate_bus_system(bus_system, rate_of_people=15/60, board_rate=3, unload_ra
                         bus['state'] = 'moving'
                         bus['loading'] = False
 
-
             ax.text(bus['position'], 5, 'Bus\n' + str(bus['people']), ha='center', va='center', bbox=dict(facecolor='blue', alpha=0.5))
             ax.text(bus['position'], 3, f"{bus['people']} passengers", ha='center', va='center', fontsize=8, color='black')
 
-        
         global elapsed_frames
         elapsed_frames += 1
 
-                # Assuming each frame in the animation represents 0.2 seconds in real life
+        # Saying each frame in the animation represents 0.2 seconds in real life
         animation_frame_time = 0.5*bus_system.time_between_ew/9  # in seconds
 
         # Calculate the real-time elapsed for each frame based on the x-minute travel time
         real_time_per_frame = (bus_system.time_between_ew * 60) / (bus_system.time_between_ew * 5 / animation_frame_time)  # in seconds
-
 
         # Calculate the real-time elapsed based on the animation frames
         #real_time_per_frame = (bus_system.time_between_ew * 60) / (bus_system.time_between_ew * 5)  # in seconds
@@ -157,7 +147,6 @@ def animate_bus_system(bus_system, rate_of_people=15/60, board_rate=3, unload_ra
         # Display the timer on the plot
         ax.text(50, 480, f"Elapsed: {minutes:02}:{seconds:02}", ha='center', va='center', fontsize=10, color='black', bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.5'))
 
-
         # Calculate the total height needed for all the waiting people
         height_east = len(bus_stop_east) * 0.6
         height_west = len(bus_stop_west) * 0.6
@@ -168,7 +157,6 @@ def animate_bus_system(bus_system, rate_of_people=15/60, board_rate=3, unload_ra
 
         for i, _ in enumerate(bus_stop_west):
             ax.text(5, 10 + height_west - 0.6 * i, 'o', ha='center', va='center', color='red', fontsize=15)
-
 
         ax.text(95, 8.5, f"{len(bus_stop_east)} waiting", ha='center', va='center', fontsize=8, color='black')
         ax.text(5, 8.5, f"{len(bus_stop_west)} waiting", ha='center', va='center', fontsize=8, color='black')

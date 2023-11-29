@@ -1,5 +1,5 @@
 #Modified from https://github.com/akash-r34/Bus-Schedule-Optimization/blob/main/Web_mining_J_Component.ipynb
-#Added support for multiple buses
+#Added support for multiple buses and continuous data collection using api, stored in a csv to be analyzed.
 
 import os
 import csv
@@ -13,7 +13,6 @@ import time
 import csv
 from datetime import datetime
 
-############Segment 1
 # RIT agency_id: 643
 
 # py -2 agency.py
@@ -97,7 +96,6 @@ print("Longitude: " + str(lon))
 #BBox = [-77.6895, -77.6517, 43.0925, 43.0748]
 #ax.imshow(map, zorder=0, extent = BBox, aspect= 'equal')
 
-############Segment 3
 import requests
 import time
 import datetime
@@ -181,7 +179,7 @@ def get_vehicles(route_id,agency_id):
     vehicles_data = []
     if 'data' in json and str(agency_id) in json['data']:
         vehicles = json['data'][str(agency_id)]
-        #Support for multipple buses
+        #Support for multiple buses
         for vehicle in vehicles:
             passenger_load = round(vehicle['passenger_load'], 2) * 100
             vehicles_data.append((vehicle['vehicle_id'], passenger_load))
@@ -189,7 +187,7 @@ def get_vehicles(route_id,agency_id):
     else:
         print("No vehicle data available.")
     return vehicles_data
-
+# Gathering data continuously until program is killed 
 while True:
     vehicles_data = get_vehicles(route_id, agency_id) 
     write_to_csv(vehicles_data) 
@@ -240,7 +238,6 @@ def get_available_vehicles(route_id,agency_id,route_name):
         return passenger_load, rate_limit
 
 
-
 # -----------------------------------------------------------------------------#
 # Make a list of passenger_load for both active and inactive route/vehicles
 def passenger_load_list(route_id_list,agency_id,route_name_list):
@@ -259,12 +256,8 @@ def passenger_load_list(route_id_list,agency_id,route_name_list):
 
 #-------------------------
 
-####################################################################Duke Specific Code
+# Transloc Information Outputs and Duke Specific Details
 print(get_routes(agency_id))
 #We see from the above output that route_id = '4008330' for C1 (already set)
 print(get_vehicles(route_id, agency_id))
 print(get_available_vehicles(route_id, agency_id, "C1"))
-
-
-###########################Storing
-
