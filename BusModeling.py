@@ -178,42 +178,42 @@ def simulate_for_params(wait_times, bus_numbers, time_between_ew=7, time_stop_al
             results[(wait_time, bus_num)] = sim_result["Average Wait Time Per Person (Uniform Distribution)"]
     return results
 
+if __name__ == "__main__":
+    # Running the simulations
+    wait_times = np.linspace(0.5, 8, 16)  # 16 values between 0.5 and 16
+    bus_numbers = np.linspace(1, 10, 10, dtype=int)  # (10) Integer values between 1 and 10
+    results_with_output = simulate_for_params(wait_times, bus_numbers)
 
-# Running the simulations
-wait_times = np.linspace(0.5, 8, 16)  # 16 values between 0.5 and 16
-bus_numbers = np.linspace(1, 10, 10, dtype=int)  # (10) Integer values between 1 and 10
-results_with_output = simulate_for_params(wait_times, bus_numbers)
-
-# Extracting results for graphing
-X, Y, Z = [], [], []
-for (wait_time, bus_num), avg_wait in results_with_output.items():
-    X.append(wait_time)
-    Y.append(bus_num)
-    Z.append(avg_wait)
+    # Extracting results for graphing
+    X, Y, Z = [], [], []
+    for (wait_time, bus_num), avg_wait in results_with_output.items():
+        X.append(wait_time)
+        Y.append(bus_num)
+        Z.append(avg_wait)
 
 
-# Convert the results to a DataFrame for heatmap
-df = pd.DataFrame({
-    'Wait Time at Stop': X,
-    'Number of Buses': Y,
-    'Average Wait Time (Uniform Distribution)': Z
-})
+    # Convert the results to a DataFrame for heatmap
+    df = pd.DataFrame({
+        'Wait Time at Stop': X,
+        'Number of Buses': Y,
+        'Average Wait Time (Uniform Distribution)': Z
+    })
 
-# Create a pivot table for the heatmap
-heatmap_data = df.pivot_table(index='Number of Buses', columns='Wait Time at Stop', values='Average Wait Time (Uniform Distribution)')
+    # Create a pivot table for the heatmap
+    heatmap_data = df.pivot_table(index='Number of Buses', columns='Wait Time at Stop', values='Average Wait Time (Uniform Distribution)')
 
-# Plot the heatmap
-plt.figure(figsize=(12, 8))
-sns.heatmap(heatmap_data, annot=True, fmt=".2f", cmap='cividis', linewidths=.5)
-plt.title('Effects of Wait Time at Stop and Number of Buses on Average Wait Time (Uniform Distribution)')
-plt.show()
+    # Plot the heatmap
+    plt.figure(figsize=(12, 8))
+    sns.heatmap(heatmap_data, annot=True, fmt=".2f", cmap='cividis', linewidths=.5)
+    plt.title('Effects of Wait Time at Stop and Number of Buses on Average Wait Time (Uniform Distribution)')
+    plt.show()
 
-#Object creation for simulation
-duke_actual_system = DukeBusSystem("Actual", time_between_ew=5.5, time_stop_along_route=20/60, let_off_people=20/60, pull_up_to_stop=20/60, wait_at_stop_for_people=4.2, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, capacity = round(1.2*(112+60*3)/4,0), num_stops=2, time_takes_to_wait_for_them=45/60)
-duke_actual_system.simulate()
-print(duke_actual_system.get_max_hourly_throughput())
-duke_optimized_system = DukeBusSystem("Optimized", time_between_ew=5.5, time_stop_along_route=20/60, let_off_people=20/60, pull_up_to_stop=20/60, wait_at_stop_for_people=45/60, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, capacity = round(1.2*(112+60*3)/4,0), num_stops=2, time_takes_to_wait_for_them=45/60)
-duke_optimized_system.simulate()
+    #Object creation for simulation
+    duke_actual_system = DukeBusSystem("Actual", time_between_ew=5.5, time_stop_along_route=20/60, let_off_people=20/60, pull_up_to_stop=20/60, wait_at_stop_for_people=4.2, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, capacity = round(1.2*(112+60*3)/4,0), num_stops=2, time_takes_to_wait_for_them=45/60)
+    duke_actual_system.simulate()
+    print(duke_actual_system.get_max_hourly_throughput())
+    duke_optimized_system = DukeBusSystem("Optimized", time_between_ew=5.5, time_stop_along_route=20/60, let_off_people=20/60, pull_up_to_stop=20/60, wait_at_stop_for_people=45/60, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, capacity = round(1.2*(112+60*3)/4,0), num_stops=2, time_takes_to_wait_for_them=45/60)
+    duke_optimized_system.simulate()
 
 class Student:
     def __init__(self, time_allocated_for_bus=15):
@@ -262,12 +262,11 @@ def visualize_probabilities(duke_system1, duke_system2):
     plt.grid(True)
     plt.show()
 
-
-visualize_probabilities(duke_actual_system, duke_optimized_system)
-
-# Create Student instances
-student_actual = Student(time_allocated_for_bus=11)
-student_actual.probability_of_being_late(duke_actual_system, want_output=True)
-student_hopeful = Student(time_allocated_for_bus=11)
-student_hopeful.probability_of_being_late(duke_optimized_system, want_output=True)
+if __name__ == "__main__": 
+    visualize_probabilities(duke_actual_system, duke_optimized_system)
+    # Create Student instances
+    student_actual = Student(time_allocated_for_bus=10)
+    student_actual.probability_of_being_late(duke_actual_system, want_output=True)
+    student_hopeful = Student(time_allocated_for_bus=10)
+    student_hopeful.probability_of_being_late(duke_optimized_system, want_output=True)
 

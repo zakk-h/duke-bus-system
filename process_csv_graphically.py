@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
 # Load the CSV data into a DataFrame using pandas
 df = pd.read_csv('vehicle_data.csv', names=['datetime', 'vehicle_id', 'passenger_load'])
@@ -17,11 +18,13 @@ for vehicle_id, group in df.groupby('vehicle_id'):
     plt.plot(group['datetime'], group['passenger_load'], label=f'Bus {vehicle_id}')
 
 plt.legend()
+# Instead of including the date, just use H:M format.
+plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
 plt.xlabel('Time')
 plt.ylabel('Passenger Load (%)')
 plt.title('Passenger Load Over Time for Each Bus')
 plt.grid(True)
-plt.xticks(rotation=45)
+#plt.xticks(rotation=45) # If including the date, it would be best to rotate the labels on the x axis.
 plt.tight_layout()
 plt.show()
 
@@ -32,11 +35,12 @@ combined_load = df.groupby('datetime')['passenger_load'].sum()
 
 plt.figure(figsize=(15, 8))
 combined_load.plot()
+plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
 plt.xlabel('Time')
 plt.ylabel('Combined Passenger Load (%)')
 plt.title('Combined Passenger Load Over Time Across All Buses')
 plt.grid(True)
-plt.xticks(rotation=45)
+#plt.xticks(rotation=45)
 plt.tight_layout()
 plt.show()
 
@@ -49,12 +53,12 @@ moving_avg = combined_load.rolling(window='1H').mean()
 start_point = combined_load.index[0] + pd.Timedelta(hours=1)
 moving_avg[start_point:].plot(label='1-Hour Moving Average')
 
+plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
 plt.xlabel('Time')
 plt.ylabel('Passenger Load (%)')
 plt.title('Combined Passenger Load (1 HR Moving Average) over Time')
 plt.grid(True)
 plt.legend()
-#Rotating x axis laels
-plt.xticks(rotation=45)
+#plt.xticks(rotation=45)
 plt.tight_layout()
 plt.show()

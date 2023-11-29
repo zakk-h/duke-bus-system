@@ -18,7 +18,7 @@ total_passenger_percent = df['passenger_load'].sum()
 # Instead, this needs to be normalized by the average time periods the student is on the bus. This CSV has data from once a minute.
 
 # To do this, we will use our simulation and models from BusModeling.py
-duke_actual_system = DukeBusSystem("Actual", time_between_ew=5.5, time_stop_along_route=20/60, let_off_people=20/60, pull_up_to_stop=20/60, wait_at_stop_for_people=4.2, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=True, capacity = round(1.2*(112+60*3)/4,0), num_stops=2, time_takes_to_wait_for_them=45/60)
+duke_actual_system = DukeBusSystem("Actual", time_between_ew=5.5, time_stop_along_route=20/60, let_off_people=20/60, pull_up_to_stop=20/60, wait_at_stop_for_people=4.2, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=False, capacity = round(1.2*(112+60*3)/4,0), num_stops=2, time_takes_to_wait_for_them=45/60)
 duke_actual_system.simulate()
 
 time_on_bus_minutes = duke_actual_system.get_average_time_person_on_bus()
