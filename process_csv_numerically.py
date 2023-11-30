@@ -19,7 +19,7 @@ total_passenger_percent = df['passenger_load'].sum()
 # Instead, this needs to be normalized by the average time periods the student is on the bus. This CSV has data from once a minute.
 
 # To do this, we will use our simulation and models from BusModeling.py
-duke_actual_system = DukeBusSystem("Actual", time_between_ew=5.5, time_stop_along_route=20/60, let_off_people=20/60, pull_up_to_stop=20/60, wait_at_stop_for_people=4.2, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=False, capacity = round(1.2*(112+60*3)/4,0), num_stops=2, time_takes_to_wait_for_them=45/60)
+duke_actual_system = DukeBusSystem("Actual", time_between_ew=5.5, time_stop_along_route=20/60, let_off_people=20/60, pull_up_to_stop=20/60, wait_at_stop_for_people=4.2, num_buses=4, num_people_running=3, num_people_on_bus=40, print_output=False, capacity = round(1.2*(112+66*3)/4,0), num_stops=2, time_takes_to_wait_for_them=45/60)
 duke_actual_system.simulate()
 
 time_on_bus_minutes = duke_actual_system.get_average_time_person_on_bus()
@@ -27,7 +27,7 @@ time_on_bus_csv_periods = time_on_bus_minutes # They are 1-to-1
 
 real_passenger_percent_total = total_passenger_percent/time_on_bus_csv_periods
 
-factor = 1.2 # Capacity does not line up precisely with 100%, and we adjust for that here.
+factor = 1.2 # Capacity may not line up precisely with 100%, and we adjust for that here.
 bus_capacity_for_100 = duke_actual_system.capacity/factor 
 print(f"Bus Capacity (to have Transloc display 100%, average across bus sizes): {round(bus_capacity_for_100)}")
 
